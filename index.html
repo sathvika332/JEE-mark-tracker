@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JEE Performance Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Vibrant Header -->
+  <header class="app-header">
+    <div class="container header-content">
+      <div>
+        <span class="header-pill">JEE Main Mock Analytics</span>
+        <h1>JEE Performance Tracker</h1>
+        <p class="subtitle">Track your mock test scores, analyze weak subjects, and monitor progress</p>
+      </div>
+      <div class="header-actions">
+        <button id="loadSampleBtn" class="btn btn-glass" type="button">Load Sample Data</button>
+        <button id="clearAllBtn" class="btn btn-outline-danger" type="button">Clear All</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Dashboard Summary Cards -->
+    <section class="section">
+      <h2 class="section-title">Performance Dashboard</h2>
+      <div class="dashboard-grid">
+        <div class="stat-card accent-blue">
+          <div class="stat-top">
+            <span class="stat-label">Total Mock Tests</span>
+            <span class="stat-icon icon-blue">#</span>
+          </div>
+          <strong class="stat-value" id="totalTestsCount">0</strong>
+          <span class="stat-note">Tests attempted</span>
+        </div>
+
+        <div class="stat-card accent-indigo">
+          <div class="stat-top">
+            <span class="stat-label">Highest Score</span>
+            <span class="stat-icon icon-indigo">★</span>
+          </div>
+          <strong class="stat-value text-blue" id="highestScore">-</strong>
+          <span class="stat-note">Out of 300</span>
+        </div>
+
+        <div class="stat-card accent-purple">
+          <div class="stat-top">
+            <span class="stat-label">Lowest Score</span>
+            <span class="stat-icon icon-purple">↓</span>
+          </div>
+          <strong class="stat-value text-purple" id="lowestScore">-</strong>
+          <span class="stat-note">Out of 300</span>
+        </div>
+
+        <div class="stat-card accent-cyan">
+          <div class="stat-top">
+            <span class="stat-label">Average Score</span>
+            <span class="stat-icon icon-cyan">≈</span>
+          </div>
+          <strong class="stat-value" id="averageScore">-</strong>
+          <span class="stat-note">Overall mean</span>
+        </div>
+
+        <div class="stat-card accent-violet">
+          <div class="stat-top">
+            <span class="stat-label">Most Recent Score</span>
+            <span class="stat-icon icon-violet">⚡</span>
+          </div>
+          <strong class="stat-value text-blue" id="recentScore">-</strong>
+          <span class="stat-note">Latest mock test</span>
+        </div>
+
+        <div class="stat-card accent-pink">
+          <div class="stat-top">
+            <span class="stat-label">Overall Progress</span>
+            <span class="stat-icon icon-pink">↗</span>
+          </div>
+          <strong class="stat-value" id="overallChange">-</strong>
+          <span class="stat-note">Latest vs First test</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add Mock Test + Performance Graph -->
+    <section class="main-grid section">
+      <!-- Add Mock Test Form -->
+      <div class="card">
+        <h2 class="card-title">Add Mock Test</h2>
+        <form id="testForm" novalidate>
+          <div class="form-group">
+            <label for="testName">Mock Test Name / Number</label>
+            <input type="text" id="testName" placeholder="e.g., Mock Test 1" required />
+          </div>
+
+          <div class="form-group">
+            <label for="testDate">Exam Date</label>
+            <input type="date" id="testDate" required />
+          </div>
+
+          <div class="marks-grid">
+            <div class="form-group">
+              <label for="physicsMarks">Physics (0-100)</label>
+              <input type="number" id="physicsMarks" min="0" max="100" placeholder="0" required />
+            </div>
+
+            <div class="form-group">
+              <label for="chemistryMarks">Chemistry (0-100)</label>
+              <input type="number" id="chemistryMarks" min="0" max="100" placeholder="0" required />
+            </div>
+
+            <div class="form-group">
+              <label for="mathMarks">Maths (0-100)</label>
+              <input type="number" id="mathMarks" min="0" max="100" placeholder="0" required />
+            </div>
+          </div>
+
+          <div class="live-total-box">
+            <span>Calculated Total Marks:</span>
+            <strong class="gradient-text"><span id="liveTotal">0</span> / 300</strong>
+          </div>
+
+          <p id="formError" class="error-message" aria-live="polite"></p>
+
+          <button type="submit" class="btn btn-primary btn-full">+ Add Mock Test</button>
+        </form>
+      </div>
+
+      <!-- Performance Line Graph -->
+      <div class="card">
+        <div class="card-header-row">
+          <h2 class="card-title">Performance Graph</h2>
+          <span class="badge">Total Marks (out of 300)</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance Analysis -->
+    <section class="section">
+      <div class="card">
+        <h2 class="card-title">Performance Analysis</h2>
+        <div class="analysis-grid">
+          <div class="analysis-item item-blue">
+            <span class="analysis-label">Highest-Scoring Test</span>
+            <p class="analysis-value" id="analysisHighestTest">No data yet</p>
+          </div>
+
+          <div class="analysis-item item-indigo">
+            <span class="analysis-label">Lowest-Scoring Test</span>
+            <p class="analysis-value" id="analysisLowestTest">No data yet</p>
+          </div>
+
+          <div class="analysis-item item-cyan">
+            <span class="analysis-label">Average Score</span>
+            <p class="analysis-value" id="analysisAverage">No data yet</p>
+          </div>
+
+          <div class="analysis-item item-violet">
+            <span class="analysis-label">Consecutive Test Change</span>
+            <p class="analysis-value" id="analysisConsecutive">No data yet</p>
+          </div>
+
+          <div class="analysis-item item-blue">
+            <span class="analysis-label">Subject-Wise Highest Marks</span>
+            <p class="analysis-value" id="analysisSubjectHighest">No data yet</p>
+          </div>
+
+          <div class="analysis-item highlight-purple">
+            <span class="analysis-label">Subject Needing Improvement</span>
+            <p class="analysis-value" id="analysisWeakestSubject">No data yet</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mock Test History Table -->
+    <section class="section">
+      <div class="card">
+        <h2 class="card-title">Mock Test History</h2>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Test Name</th>
+                <th>Date</th>
+                <th>Physics</th>
+                <th>Chemistry</th>
+                <th>Mathematics</th>
+                <th>Total (/300)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td colspan="7" class="empty-table">No mock tests added yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>JEE Performance Tracker &bull; Built with HTML, CSS &amp; Vanilla JavaScript</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
